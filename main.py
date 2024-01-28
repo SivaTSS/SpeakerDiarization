@@ -14,34 +14,41 @@ The challenges also include understanding context.
 
 st.title("Speaker Diarization")
 
-uploaded_audio_file = st.file_uploader(
-    "**Upload an audio file**", type=["mp3"])
+st.markdown("---")
 
-if uploaded_audio_file is not None:
+st.markdown("## Input")
+
+st.markdown(
+    "<p style='font-size: 18px;'>Please upload a video to perform speaker diariazation:</p>", unsafe_allow_html=True)
+
+uploaded_audio_file = st.file_uploader(
+    "", type=["mp4"])
+
+if uploaded_audio_file is None:
     st.write("File uploaded successfully!")
 
-generate_audio_transcript = st.button("Generate Audio Transcript")
+    st.warning("Please be patient, processing might take upto 5 minutes!")
 
-st.markdown("---")
+    st.markdown("---")
 
-st.markdown("## Audio Transcript")
-text_input = st.text_area(
-    "", sample_text, height=500)
+    st.markdown("## Generated Audio Transcript")
+    text_input = st.text_area(
+        "", sample_text, height=500)
 
-model_name = "facebook/bart-large-cnn"
-tokenizer = BartTokenizer.from_pretrained(model_name)
-model = BartForConditionalGeneration.from_pretrained(model_name)
+    model_name = "facebook/bart-base"
+    tokenizer = BartTokenizer.from_pretrained(model_name)
+    model = BartForConditionalGeneration.from_pretrained(model_name)
 
-inputs = tokenizer.encode("summarize: " + text_input,
-                          return_tensors="pt", max_length=1024, truncation=True)
+    inputs = tokenizer.encode("summarize: " + text_input,
+                              return_tensors="pt", max_length=1024, truncation=True)
 
-summary_ids = model.generate(inputs, max_length=50, min_length=10,
-                             length_penalty=2.0, num_beams=4, early_stopping=True)
+    summary_ids = model.generate(inputs, max_length=50, min_length=10,
+                                 length_penalty=2.0, num_beams=4, early_stopping=True)
 
-summary = tokenizer.decode(summary_ids[0], skip_special_tokens=True)
+    summary = tokenizer.decode(summary_ids[0], skip_special_tokens=True)
 
-st.markdown("---")
+    st.markdown("---")
 
-st.markdown("## Meeting Summary")
+    st.markdown("## Generated Summary")
 
-st.write(summary)
+    st.write(summary)
