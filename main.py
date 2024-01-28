@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import requests
 
 from transformers import BartTokenizer, BartForConditionalGeneration
 
@@ -58,3 +57,10 @@ if uploaded_audio_file is None:
     st.markdown("## Generated Summary")
 
     st.write(summary)
+
+    st.download_button(
+        label="Click here to download the results!",
+        data=summary,
+        file_name="results.txt",
+        key=f"download_button"
+    )
