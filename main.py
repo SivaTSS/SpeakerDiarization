@@ -1,34 +1,47 @@
-# Import necessary libraries
 import streamlit as st
 import pandas as pd
 import numpy as np
 
-from summarizer import Summarizer
+from transformers import BartTokenizer, BartForConditionalGeneration
 
-st.title("AI tool for meetings summarization")
+sample_text = """
+Natural language processing (NLP) is a fascinating field.
+In NLP, computers can understand and generate human-like text.
+The ultimate goal is to make computers interpret natural language.
+This involves challenges such as language ambiguity.
+The challenges also include understanding context.
+"""
+
+st.title("Speaker Diarization")
+
+uploaded_audio_file = st.file_uploader(
+    "**Upload an audio file**", type=["mp3"])
+
+if uploaded_audio_file is not None:
+    st.write("File uploaded successfully!")
+
+generate_audio_transcript = st.button("Generate Audio Transcript")
 
 st.markdown("---")
 
-sample_text = """
-Natural language processing (NLP) is a field of artificial intelligence that focuses on the interaction 
-between computers and humans through natural language. The ultimate objective of NLP is to enable computers 
-to understand, interpret, and generate human-like text. It involves several challenges, such as language 
-ambiguity, context understanding, and the nuances of human communication.
-
-There are two main approaches to text summarization: extractive and abstractive. Extractive summarization 
-involves selecting and presenting the most important sentences or phrases from the original text, while 
-abstractive summarization aims to generate new sentences that convey the main ideas in a more concise form.
-
-The 'summarizer' library uses BERT for extractive summarization. Let's generate a summary for the sample text.
-"""
-
+st.markdown("## Audio Transcript")
 text_input = st.text_area(
-    "**Enter/Paste text for summarization:**", sample_text, height=500)
+    "", sample_text, height=500)
 
-generate_summary = st.button("Generate Summary")
+model_name = "facebook/bart-large-cnn"
+tokenizer = BartTokenizer.from_pretrained(model_name)
+model = BartForConditionalGeneration.from_pretrained(model_name)
 
-if generate_summary:
+inputs = tokenizer.encode("summarize: " + text_input,
+                          return_tensors="pt", max_length=1024, truncation=True)
 
-    bert_summarizer = Summarizer()
+summary_ids = model.generate(inputs, max_length=50, min_length=10,
+                             length_penalty=2.0, num_beams=4, early_stopping=True)
 
-    st.markdown(bert_summarizer(text_input))
+summary = tokenizer.decode(summary_ids[0], skip_special_tokens=True)
+
+st.markdown("---")
+
+st.markdown("## Meeting Summary")
+
+st.write(summary)
