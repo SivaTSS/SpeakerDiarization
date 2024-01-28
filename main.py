@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
+import requests
 
 from transformers import BartTokenizer, BartForConditionalGeneration
 
@@ -17,6 +18,11 @@ st.title("Speaker Diarization")
 st.markdown("---")
 
 st.markdown("## Input")
+
+st.markdown("<p style='font-size: 18px;'>Sample Input Video:</p>",
+            unsafe_allow_html=True)
+
+st.video("gitlab_meeting_public.mp4")
 
 st.markdown(
     "<p style='font-size: 18px;'>Please upload a video to perform speaker diariazation:</p>", unsafe_allow_html=True)
