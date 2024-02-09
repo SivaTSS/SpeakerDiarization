@@ -1,4 +1,4 @@
-Speaker Diarization
+# Speaker Diarization
 
 Won Techsmith award at Spartahack https://devpost.com/software/speaker-diarization
 
